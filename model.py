@@ -37,7 +37,7 @@ def format_data(files_btc, files_sol, data_provider):
     skipped_files = []
 
     for file in files_btc:
-        zip_file_path = os.path.join(binance_data_path, os.path.basename(file))
+        zip_file_path = os.path.join(binance_data_path, os.path.basenameseries(file))
         if not os.path.exists(zip_file_path):
             continue
         try:
@@ -74,7 +74,6 @@ def format_data(files_btc, files_sol, data_provider):
         print("No data processed for BTCUSDT or SOLUSDT")
         return
 
-    # Sort and deduplicate index after concatenation
     price_df_btc = price_df_btc.sort_index().loc[~price_df_btc.index.duplicated(keep='last')]
     price_df_sol = price_df_sol.sort_index().loc[~price_df_sol.index.duplicated(keep='last')]
     print(f"BTC rows before concat: {len(price_df_btc)}, SOL rows before concat: {len(price_df_sol)}")
@@ -86,7 +85,7 @@ def format_data(files_btc, files_sol, data_provider):
     print(f"Sample index after concat: {price_df.index[:5].tolist()}")
 
     if TIMEFRAME != "1m":
-        price_df = price_df.resample('5ME').agg({  # Updated 'm' to 'ME'
+        price_df = price_df.resample('5T').agg({
             f"{metric}_{pair}": "last" 
             for pair in ["SOLUSDT", "BTCUSDT"] 
             for metric in ["open", "high", "low", "close"]
