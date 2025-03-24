@@ -74,22 +74,26 @@ def format_data(files_btc, files_sol, data_provider):
         print("No data processed for BTCUSDT or SOLUSDT")
         return
 
+    # Sort and deduplicate index after concatenation
+    price_df_btc = price_df_btc.sort_index().loc[~price_df_btc.index.duplicated(keep='last')]
+    price_df_sol = price_df_sol.sort_index().loc[~price_df_sol.index.duplicated(keep='last')]
     print(f"BTC rows before concat: {len(price_df_btc)}, SOL rows before concat: {len(price_df_sol)}")
     
     price_df_btc = price_df_btc.rename(columns=lambda x: f"{x}_BTCUSDT")
     price_df_sol = price_df_sol.rename(columns=lambda x: f"{x}_SOLUSDT")
     price_df = pd.concat([price_df_btc, price_df_sol], axis=1)
     print(f"Rows after concat: {len(price_df)}")
+    print(f"Sample index after concat: {price_df.index[:5].tolist()}")
 
     if TIMEFRAME != "1m":
-        price_df = price_df.resample(TIMEFRAME).agg({
+        price_df = price_df.resample('5ME').agg({  # Updated 'm' to 'ME'
             f"{metric}_{pair}": "last" 
             for pair in ["SOLUSDT", "BTCUSDT"] 
             for metric in ["open", "high", "low", "close"]
         })
         print(f"Rows after resampling to {TIMEFRAME}: {len(price_df)}")
+        print(f"Sample index after resampling: {price_df.index[:5].tolist()}")
 
-    # Fill missing values before feature engineering
     price_df = price_df.ffill().bfill()
     print(f"Rows after filling NaNs: {len(price_df)}")
 
@@ -103,7 +107,6 @@ def format_data(files_btc, files_sol, data_provider):
     price_df["target_SOLUSDT"] = price_df["log_return_SOLUSDT"]
     print(f"Rows after feature engineering: {len(price_df)}")
 
-    # Drop NaNs but expect some data to remain
     price_df = price_df.dropna()
     print(f"Rows after dropna: {len(price_df)}")
     
