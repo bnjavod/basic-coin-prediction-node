@@ -74,9 +74,12 @@ def format_data(files_btc, files_sol, data_provider):
         print("No data processed for BTCUSDT or SOLUSDT")
         return
 
+    print(f"BTC rows before concat: {len(price_df_btc)}, SOL rows before concat: {len(price_df_sol)}")
+    
     price_df_btc = price_df_btc.rename(columns=lambda x: f"{x}_BTCUSDT")
     price_df_sol = price_df_sol.rename(columns=lambda x: f"{x}_SOLUSDT")
     price_df = pd.concat([price_df_btc, price_df_sol], axis=1)
+    print(f"Rows after concat: {len(price_df)}")
 
     if TIMEFRAME != "1m":
         price_df = price_df.resample(TIMEFRAME).agg({
@@ -84,6 +87,11 @@ def format_data(files_btc, files_sol, data_provider):
             for pair in ["SOLUSDT", "BTCUSDT"] 
             for metric in ["open", "high", "low", "close"]
         })
+        print(f"Rows after resampling to {TIMEFRAME}: {len(price_df)}")
+
+    # Fill missing values before feature engineering
+    price_df = price_df.ffill().bfill()
+    print(f"Rows after filling NaNs: {len(price_df)}")
 
     for pair in ["SOLUSDT", "BTCUSDT"]:
         price_df[f"log_return_{pair}"] = np.log(price_df[f"close_{pair}"].shift(-1) / price_df[f"close_{pair}"])
@@ -93,10 +101,14 @@ def format_data(files_btc, files_sol, data_provider):
 
     price_df["hour_of_day"] = price_df.index.hour
     price_df["target_SOLUSDT"] = price_df["log_return_SOLUSDT"]
+    print(f"Rows after feature engineering: {len(price_df)}")
+
+    # Drop NaNs but expect some data to remain
     price_df = price_df.dropna()
+    print(f"Rows after dropna: {len(price_df)}")
     
     if len(price_df) == 0:
-        print("No data remains after preprocessing.")
+        print("No data remains after preprocessing. Check data alignment or gaps.")
         return
 
     price_df.to_csv(training_price_data_path, date_format='%Y-%m-%d %H:%M:%S')
