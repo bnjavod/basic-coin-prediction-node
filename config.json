@@ -29,11 +29,11 @@
     },
     "worker": [
       {
-        "topicId": 46,
+        "topicId": 37,
         "inferenceEntrypointName": "apiAdapter",
         "parameters": {
           "InferenceEndpoint": "http://inference:8000/inference/{Token}",
-          "Token": "ETH"
+          "Token": "SOL"
         }
       }
     ]
