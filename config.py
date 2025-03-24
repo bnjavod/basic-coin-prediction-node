@@ -10,7 +10,7 @@ scaler_file_path = os.path.join(data_base_path, "scaler.pkl")
 
 TOKEN = os.getenv("TOKEN", default="SOL").upper()
 TRAINING_DAYS = os.getenv("TRAINING_DAYS", default="90")
-TIMEFRAME = os.getenv("TIMEFRAME", default="5m")
+TIMEFRAME = os.getenv("TIMEFRAME", default="5min")
 MODEL = os.getenv("MODEL", default="XGBoost")
 REGION = os.getenv("REGION", default="us").lower()
 if REGION in ["us", "com", "usa"]:
