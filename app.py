@@ -1,4 +1,3 @@
-# Done for log return 
 import json
 import os
 import time
@@ -26,13 +25,13 @@ def update_data():
     
     print("Downloading BTC data...")
     files_btc = download_data("BTC", TRAINING_DAYS, REGION, DATA_PROVIDER)
-    print("Downloading ETH data...")
-    files_eth = download_data("ETH", TRAINING_DAYS, REGION, DATA_PROVIDER)
-    if not files_btc or not files_eth:
+    print("Downloading SOL data...")
+    files_sol = download_data("SOL", TRAINING_DAYS, REGION, DATA_PROVIDER)
+    if not files_btc or not files_sol:
         print("No data files downloaded. Skipping format_data and training.")
         return
     print("Formatting data...")
-    format_data(files_btc, files_eth, DATA_PROVIDER)
+    format_data(files_btc, files_sol, DATA_PROVIDER)
     print("Training model...")
     train_model(TIMEFRAME)
     print("Data update and training completed.")
@@ -61,7 +60,6 @@ def update():
 
 if __name__ == "__main__":
     update_data()
-    # Wait briefly to ensure training completes before starting Flask
     while not os.path.exists(model_file_path) or not os.path.exists(scaler_file_path):
         print("Waiting for model and scaler files to be generated...")
         time.sleep(5)
