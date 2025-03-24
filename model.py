@@ -158,14 +158,21 @@ def preprocess_live_data(df_btc, df_sol):
     df_btc = df_btc.rename(columns=lambda x: f"{x}_BTCUSDT" if x != "date" else x)
     df_sol = df_sol.rename(columns=lambda x: f"{x}_SOLUSDT" if x != "date" else x)
     
-    df = pd.concat([df_btc, df_sol], axis=1)
+    # Use outer join to preserve all timestamps
+    df = pd.concat([df_btc, df_sol], axis=1, join='outer')
+    print(f"Rows after concat: {len(df)}")
 
     if TIMEFRAME != "1m":
-        df = df.resample(TIMEFRAME).agg({
+        df = df.resample('5T').agg({
             f"{metric}_{pair}": "last" 
             for pair in ["SOLUSDT", "BTCUSDT"] 
             for metric in ["open", "high", "low", "close"]
         })
+        print(f"Rows after resampling to {TIMEFRAME}: {len(df)}")
+
+    # Fill gaps before feature engineering
+    df = df.ffill().bfill()
+    print(f"Rows after filling NaNs: {len(df)}")
 
     for pair in ["SOLUSDT", "BTCUSDT"]:
         for metric in ["open", "high", "low", "close"]:
@@ -173,7 +180,10 @@ def preprocess_live_data(df_btc, df_sol):
                 df[f"{metric}_{pair}_lag{lag}"] = df[f"{metric}_{pair}"].shift(lag)
 
     df["hour_of_day"] = df.index.hour
+    print(f"Rows after feature engineering: {len(df)}")
+
     df = df.dropna()
+    print(f"Rows after dropna: {len(df)}")
 
     features = [
         f"{metric}_{pair}_lag{lag}" 
