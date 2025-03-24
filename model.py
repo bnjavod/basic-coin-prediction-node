@@ -86,7 +86,7 @@ def format_data(files_btc, files_sol, data_provider):
     print(f"Sample index after concat: {price_df.index[:5].tolist()}")
 
     if TIMEFRAME != "1m":
-        price_df = price_df.resample('5T').agg({
+        price_df = price_df.resample('5min').agg({
             f"{metric}_{pair}": "last" 
             for pair in ["SOLUSDT", "BTCUSDT"] 
             for metric in ["open", "high", "low", "close"]
@@ -164,7 +164,7 @@ def preprocess_live_data(df_btc, df_sol):
     print(f"Rows after concat: {len(df)}")
 
     if TIMEFRAME != "1m":
-        df = df.resample('5T').agg({
+        df = df.resample('5min').agg({
             f"{metric}_{pair}": "last" 
             for pair in ["SOLUSDT", "BTCUSDT"] 
             for metric in ["open", "high", "low", "close"]
