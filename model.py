@@ -37,7 +37,7 @@ def format_data(files_btc, files_sol, data_provider):
     skipped_files = []
 
     for file in files_btc:
-        zip_file_path = os.path.join(binance_data_path, os.path.basenameseries(file))
+        zip_file_path = os.path.join(binance_data_path, os.path.basename(file))  # Fixed typo
         if not os.path.exists(zip_file_path):
             continue
         try:
@@ -54,7 +54,7 @@ def format_data(files_btc, files_sol, data_provider):
             skipped_files.append(file)
 
     for file in files_sol:
-        zip_file_path = os.path.join(binance_data_path, os.path.basename(file))
+        zip_file_path = os.path.join(binance_data_path, os.path.basename(file))  # Fixed typo
         if not os.path.exists(zip_file_path):
             continue
         try:
