@@ -11,7 +11,7 @@
     "GasPerByte": 1,
     "BaseGas": 200000,
     "maxFees": 300000000,
-    "nodeRpcs": ["https://allora-rpc.testnet.allora.network/"],
+    "nodeRpcs": ["https://allora-rpc.testnet.allora.network","https://allora-rpc.monallo.ai","https://rpc.ankr.com/allora_testnet"],
     "nodegRpcs": ["allora-grpc.testnet.allora.network:443"],
     "maxRetries": 3,
     "retryDelay": 5,
