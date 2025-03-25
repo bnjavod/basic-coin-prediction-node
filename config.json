@@ -15,7 +15,7 @@
     "nodegRpcs": ["allora-grpc.testnet.allora.network:443", "testnet-allora.lavenderfive.com:443"],
     "maxRetries": 8,
     "retryDelay": 3,
-    "accountSequenceRetryDelay": 10,  // Increased
+    "accountSequenceRetryDelay": 10,
     "launchRoutineDelay": 5,
     "submitTx": true,
     "blockDurationEstimated": 5,
@@ -31,7 +31,7 @@
       "inferenceEntrypointName": "apiAdapter",
       "loopSeconds": 5,
       "parameters": {
-        "InferenceEndpoint": "http://inference:8000/inference/{Token}",  // Updated
+        "InferenceEndpoint": "http://inference:8000/inference/{Token}",
         "Token": "SOL"
       }
     }
