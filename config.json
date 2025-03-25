@@ -1,40 +1,44 @@
 {
-    "wallet": {
-      "chainId": "allora-testnet-1",
-      "keyringBackend": "test",
-      "keyringPassphrase": "",
-      "addressKeyName": "testkey",
-      "addressRestoreMnemonic": "hunt spare prison able label clean fragile dwarf unfold shaft mesh harvest retire step slim able salute measure science pepper size save all clarify",
-      "alloraHomeDir": "",
-      "gasPrices": "auto",
-      "gasPriceUpdateInterval": 5,
-      "maxFees": 50000000,
-      "gasAdjustment": 1.2,
-      "simulateGasFromStart": true,
-      "GasPerByte": 1,
-      "BaseGas": 200000,
-      "nodeRpcs": ["https://allora-rpc.testnet.allora.network","https://allora-rpc.monallo.ai","https://rpc.ankr.com/allora_testnet"],
-      "nodegRpcs": ["allora-grpc.testnet.allora.network:443"],
-      "maxRetries": 5,
-      "retryDelay": 3,
-      "accountSequenceRetryDelay": 5,
-      "launchRoutineDelay": 5,
-      "submitTx": true,
-      "blockDurationEstimated": 6,
-      "windowCorrectionFactor": 0.8,
-      "timeoutRPCSecondsQuery": 60,
-      "timeoutRPCSecondsTx": 300,
-      "timeoutRPCSecondsRegistration": 300,
-      "timeoutHTTPConnection": 10
-    },
-    "worker": [
-      {
-        "topicId": 37,
-        "inferenceEntrypointName": "apiAdapter",
-        "parameters": {
-          "InferenceEndpoint": "http://inference:8000/inference/{Token}",
-          "Token": "SOL"
-        }
+  "wallet": {
+    "chainId": "allora-testnet-1",
+    "addressKeyName": "testkey",
+    "addressRestoreMnemonic": "hunt spare prison able label clean fragile dwarf unfold shaft mesh harvest retire step slim able salute measure science pepper size save all clarify",
+    "alloraHomeDir": "",
+    "gasPrices": "100",
+    "gasPriceUpdateInterval": 5,
+    "gasAdjustment": 1.2,
+    "simulateGasFromStart": true,
+    "GasPerByte": 1,
+    "BaseGas": 200000,
+    "maxFees": 300000000,
+    "nodeRpcs": [
+      "https://allora-rpc.testnet.allora.network/"
+    ],
+    "nodegRpcs": [
+      "allora-grpc.testnet.allora.network:443",
+      "testnet-allora.lavenderfive.com:443"
+    ],
+    "maxRetries": 8,
+    "retryDelay": 3,
+    "accountSequenceRetryDelay": 5,
+    "launchRoutineDelay": 5,
+    "submitTx": true,
+    "blockDurationEstimated": 5,
+    "windowCorrectionFactor": 0.8,
+    "timeoutRPCSecondsQuery": 60,
+    "timeoutRPCSecondsTx": 300,
+    "timeoutRPCSecondsRegistration": 300,
+    "timeoutHTTPConnection": 10
+  },
+  "worker": [
+    {
+      "topicId": 37,
+      "inferenceEntrypointName": "apiAdapter",
+      "loopSeconds": 5,
+      "parameters": {
+        "InferenceEndpoint": "http://inference:8000/predict_price/{Token}",
+        "Token": "SOL"
       }
-    ]
-  }
+    }
+  ]
+}
