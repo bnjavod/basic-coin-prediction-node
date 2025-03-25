@@ -12,7 +12,7 @@
     "BaseGas": 200000,
     "maxFees": 300000000,
     "nodeRpcs": ["https://allora-rpc.testnet.allora.network/"],
-    "nodegRpcs": ["allora-grpc.testnet.allora.network:443", "testnet-allora.lavenderfive.com:443"],
+    "nodegRpcs": ["allora-grpc.testnet.allora.network:443"],
     "maxRetries": 8,
     "retryDelay": 3,
     "accountSequenceRetryDelay": 10,
