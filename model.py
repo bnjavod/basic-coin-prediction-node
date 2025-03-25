@@ -4,7 +4,8 @@ import pickle
 import pandas as pd
 import numpy as np
 import requests
-from zipfile import ZipFile  # Added missing import
+import time  # Added for retry logic
+from zipfile import ZipFile
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import TimeSeriesSplit, GridSearchCV
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score, make_scorer
@@ -38,7 +39,7 @@ def format_data(files_btc, files_sol, data_provider):
     skipped_files = []
 
     for file in files_btc:
-        zip_file_path = os.path.join(binance_data_path, os.path.basename(file))  # Fixed typo
+        zip_file_path = os.path.join(binance_data_path, os.path.basename(file))
         if not os.path.exists(zip_file_path):
             continue
         try:
@@ -55,7 +56,7 @@ def format_data(files_btc, files_sol, data_provider):
             skipped_files.append(file)
 
     for file in files_sol:
-        zip_file_path = os.path.join(binance_data_path, os.path.basename(file))  # Fixed typo
+        zip_file_path = os.path.join(binance_data_path, os.path.basename(file))
         if not os.path.exists(zip_file_path):
             continue
         try:
@@ -159,7 +160,6 @@ def preprocess_live_data(df_btc, df_sol):
     df_btc = df_btc.rename(columns=lambda x: f"{x}_BTCUSDT" if x != "date" else x)
     df_sol = df_sol.rename(columns=lambda x: f"{x}_SOLUSDT" if x != "date" else x)
     
-    # Use outer join to preserve all timestamps
     df = pd.concat([df_btc, df_sol], axis=1, join='outer')
     print(f"Rows after concat: {len(df)}")
 
@@ -171,7 +171,6 @@ def preprocess_live_data(df_btc, df_sol):
         })
         print(f"Rows after resampling to {TIMEFRAME}: {len(df)}")
 
-    # Fill gaps before feature engineering
     df = df.ffill().bfill()
     print(f"Rows after filling NaNs: {len(df)}")
 
@@ -260,13 +259,22 @@ def get_inference(token, timeframe, region, data_provider):
     with open(model_file_path, "rb") as f:
         loaded_model = pickle.load(f)
     
-    df_btc = download_binance_current_day_data("BTCUSDT", region)
-    df_sol = download_binance_current_day_data("SOLUSDT", region)
-    
-    ticker_url = f'https://api.binance.{region}/api/v3/ticker/price?symbol=SOLUSDT'
-    response = requests.get(ticker_url)
-    response.raise_for_status()
-    latest_price = float(response.json()['price'])
+    # Retry logic for Binance API calls to prevent 500 errors
+    max_attempts = 3
+    for attempt in range(max_attempts):
+        try:
+            df_btc = download_binance_current_day_data("BTCUSDT", region)
+            df_sol = download_binance_current_day_data("SOLUSDT", region)
+            ticker_url = f'https://api.binance.{region}/api/v3/ticker/price?symbol=SOLUSDT'
+            response = requests.get(ticker_url)
+            response.raise_for_status()
+            latest_price = float(response.json()['price'])
+            break
+        except requests.RequestException as e:
+            if attempt == max_attempts - 1:
+                raise Exception(f"Failed to fetch Binance data after {max_attempts} attempts: {str(e)}")
+            print(f"Retry {attempt + 1}/{max_attempts} after error: {e}")
+            time.sleep(5)
     
     X_new = preprocess_live_data(df_btc, df_sol)
     log_return_pred = loaded_model.predict(X_new[-1].reshape(1, -1))[0]
@@ -276,4 +284,4 @@ def get_inference(token, timeframe, region, data_provider):
     print(f"Predicted 5m SOL/USD Log Return: {log_return_pred:.6f}")
     print(f"Latest SOL Price: {latest_price:.2f}")
     print(f"Predicted SOL Price in 5m: {predicted_price:.2f}")
-    return log_return_pred
+    return log_return_pred  # Returns log return; change to predicted_price if absolute price is required
