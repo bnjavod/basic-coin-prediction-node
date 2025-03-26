@@ -284,4 +284,4 @@ def get_inference(token, timeframe, region, data_provider):
     print(f"Predicted 5m SOL/USD Log Return: {log_return_pred:.6f}")
     print(f"Latest SOL Price: {latest_price:.2f}")
     print(f"Predicted SOL Price in 5m: {predicted_price:.2f}")
-    return log_return_pred  # Returns log return; change to predicted_price if absolute price is required
+    return predicted_price  # Modified to return absolute price for topic 37
