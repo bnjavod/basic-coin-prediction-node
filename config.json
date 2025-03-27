@@ -7,7 +7,7 @@
     "gasPrices": "auto",
     "gasPriceUpdateInterval": 5,
     "gasAdjustment": 1.2,
-    "simulateGasFromStart": false,
+    "simulateGasFromStart": true,
     "GasPerByte": 1,
     "BaseGas": 200000,
     "maxFees": 300000000,
